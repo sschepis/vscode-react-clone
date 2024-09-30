@@ -1,0 +1,58 @@
+.file-explorer {
+  background-color: #252526;
+  color: #cccccc;
+  padding: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.file-explorer h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: normal;
+  text-transform: uppercase;
+}
+
+.file-node {
+  margin-left: 5px;
+}
+
+.file-node-content {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.file-node-content:hover {
+  background-color: #2a2d2e;
+}
+
+.expand-icon {
+  font-size: 10px;
+  width: 16px;
+}
+
+.file-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.file-icon.file {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="%23C5C5C5" d="M13.985 2.383L11.415 0H2v16h14V3.769L13.985 2.383zM14 15H3V1h7v3h4v11z"/></svg>');
+}
+
+.file-icon.directory {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><path fill="%23C5C5C5" d="M14 4H8.5L7 2H2L1 3v10l1 1h12l1-1V5l-1-1zm0 9H2V4h4.5l1.5 2H14v7z"/></svg>');
+}
+
+.file-name {
+  font-size: 13px;
+}
+
+.file-children {
+  margin-left: 16px;
+}

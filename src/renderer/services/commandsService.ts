@@ -1,13 +1,35 @@
-'use strict';
+import { EventEmitter } from 'events';
 
-/**
- * A centralize location that knows how to delegate all commands to the responsible entity.
- * The idea is not to have two concrete entities talk to each other directly
- * without going through this service to avoid adhoc coupling between concrete entities.
- *
- * ... feel like this is going to become a messy monolith quickly ... we'll see how it goes
- *
- * Do not put too much logic in this layer. It merely delegates to appropriate entities.
- *
- * Probably have commandsService be the only entity that "execute" command for the entities.
- */
+export interface Command {
+  type: string;
+  payload?: any;
+}
+
+class CommandsService {
+  private eventEmitter: EventEmitter;
+
+  constructor() {
+    this.eventEmitter = new EventEmitter();
+  }
+
+  executeCommand(command: Command): void {
+    try {
+      console.log(`Executing command: ${command.type}`);
+      this.eventEmitter.emit('command', command);
+    } catch (error) {
+      console.error(`Error executing command ${command.type}:`, error);
+    }
+  }
+
+  onCommand(listener: (command: Command) => void): void {
+    this.eventEmitter.on('command', (command: Command) => {
+      try {
+        listener(command);
+      } catch (error) {
+        console.error(`Error handling command ${command.type}:`, error);
+      }
+    });
+  }
+}
+
+export const commandsService = new CommandsService();

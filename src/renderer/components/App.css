@@ -1,12 +1,58 @@
-/* monaco-shell & monaco-workbench */
 .App {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI',
-    'HelveticaNeue-Light', 'Ubuntu', 'Droid Sans', sans-serif;
-  font-size: 13px;
-  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .App__PositionContext {
-  position: relative;
-  min-height: 100vh;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.Sidebar {
+  width: 300px;
+  background-color: #252526;
+  overflow-y: auto;
+}
+
+.MainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #1e1e1e;
+}
+
+.MainPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.error-message {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #f44336;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  z-index: 1000;
+}
+
+.toggle-search-replace {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background-color: #0e639c;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.toggle-search-replace:hover {
+  background-color: #1177bb;
 }
