@@ -6,16 +6,24 @@ import { PromptExecution } from './PromptExecution';
 import { AIProviders } from './AIProviders';
 import { ToolManagement } from './ToolManagement';
 
+function mapToRecord<K extends string, V>(map: Map<K, V>): Record<K, V> {
+    const record: Record<K, V> = {} as Record<K, V>;
+    map.forEach((value, key) => {
+        record[key] = value;
+    });
+    return record;
+}
+
 export class DynamicAISystem extends EventEmitter {
-    private config: Configuration;
-    private resourceMonitor: ResourceMonitor;
-    private initialization: Initialization;
-    private toolManagement: ToolManagement;
-    private aiProviders: AIProviders;
-    private prompts: Record<string, any> = {};
-    private cache: Map<string, any> = new Map();
-    private state: Record<string, any> = {};
-    private promptExecution: PromptExecution;
+    protected config: Configuration;
+    protected resourceMonitor: ResourceMonitor;
+    protected initialization: Initialization;
+    protected toolManagement: ToolManagement;
+    protected aiProviders: AIProviders;
+    protected prompts: Record<string, any> = {};
+    protected cache: Map<string, any> = new Map();
+    protected state: Record<string, any> = {};
+    protected promptExecution: PromptExecution | undefined;
 
     constructor(configPath: string | null) {
         super();
@@ -37,7 +45,10 @@ export class DynamicAISystem extends EventEmitter {
             this.prompts = await this.initialization.loadPrompts(promptsPath);
             const tools = await this.initialization.loadTools(toolsPath);
             
-            this.toolManagement.initializeTools(tools);
+            // Convert tools Map to Record
+            const toolsRecord = mapToRecord(tools);
+            
+            this.toolManagement.initializeTools(toolsRecord);
             this.promptExecution = new PromptExecution(
                 this.toolManagement.getTools(),
                 this.prompts,
@@ -59,23 +70,17 @@ export class DynamicAISystem extends EventEmitter {
         }
     }
 
-    emit(event: string | symbol, ...args: any[]): boolean {
-        super.emit(event, ...args);
-        console.log('Event emitted:', event, args);
-        return true;
-    }
-
-    private setupEventListeners(): void {
+    protected setupEventListeners(): void {
         this.on('highLoad', this.handleHighLoad.bind(this));
         this.on('normalLoad', this.handleNormalLoad.bind(this));
     }
 
-    private handleHighLoad(data: any): void {
+    protected handleHighLoad(data: any): void {
         console.warn('High system load detected:', data);
         // Implement load management strategies here
     }
 
-    private handleNormalLoad(data: any): void {
+    protected handleNormalLoad(data: any): void {
         console.log('System load returned to normal:', data);
         // Implement normal load operations here
     }
@@ -95,8 +100,8 @@ export class DynamicAISystem extends EventEmitter {
         }
     }
 
-    addTool(name: string, fn: any): this {
-        return this.toolManagement.addTool(name, fn);
+    addTool(name: string, tool: any): any {
+        return this.toolManagement.addTool(name, tool);
     }
 
     getTools(): Record<string, any> {

@@ -11,6 +11,11 @@ import { TestingImprovement } from './TestingImprovement';
 import { DesignPatterns } from './DesignPatterns';
 import { SelfImprovement } from './SelfImprovement';
 
+interface Tool {
+    schema: any;
+    exec: (...args: any[]) => Promise<any>;
+}
+
 export class AdvancedCodeRefactoringAssistant extends DynamicAISystem {
     private git: SimpleGit;
     private project: Project;
@@ -44,6 +49,10 @@ export class AdvancedCodeRefactoringAssistant extends DynamicAISystem {
         await this.toolInitialization.loadRefactoringTools();
         await this.toolInitialization.loadLanguageModels();
         return this;
+    }
+
+    addTool(name: string, tool: Tool): any {
+        super.addTool(name, tool);
     }
 
     // Delegate methods to respective components
@@ -81,21 +90,34 @@ export class AdvancedCodeRefactoringAssistant extends DynamicAISystem {
 
     // Helper methods (implement these based on your specific requirements)
     async readFile(filePath: string): Promise<string> {
-        // Implementation
+        // TODO: Implement file reading logic
         return '';
     }
 
     async writeFile(filePath: string, content: string): Promise<void> {
-        // Implementation
+        // TODO: Implement file writing logic
     }
 
     async parseCode(code: string, language: string): Promise<any> {
-        // Implementation
+        // TODO: Implement code parsing logic
         return {};
     }
 
     generateCode(ast: any): string {
-        // Implementation
+        // TODO: Implement code generation logic
         return '';
+    }
+
+    // Git operations
+    async gitCheckoutLocalBranch(branchName: string): Promise<void> {
+        await this.git.checkoutLocalBranch(branchName);
+    }
+
+    async gitAdd(filePath: string): Promise<void> {
+        await this.git.add(filePath);
+    }
+
+    async gitCommit(message: string): Promise<void> {
+        await this.git.commit(message);
     }
 }

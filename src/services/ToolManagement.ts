@@ -82,7 +82,8 @@ export class ToolManagement {
             toolsSource[name] = {
                 type: tool.schema.parameters.type,
                 schema: tool.schema,
-                script: tool.schema.parameters // This might need adjustment depending on your actual schema structure
+                // We're not including the script here as it's not part of the tool's schema
+                // and should not be exposed to other parts of the system
             };
         }
         return toolsSource;

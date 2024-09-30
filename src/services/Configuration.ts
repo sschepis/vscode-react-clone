@@ -20,7 +20,7 @@ export class Configuration {
         this.load();
     }
 
-    load(): void {
+    private load(): void {
         try {
             const fileContent = fs.readFileSync(this.configPath, 'utf8');
             const fileConfig = JSON.parse(fileContent);
@@ -36,7 +36,7 @@ export class Configuration {
         }
     }
 
-    save(): void {
+    private save(): void {
         try {
             fs.writeFileSync(this.configPath, JSON.stringify(this.config, null, 2));
             console.log('Configuration saved successfully');

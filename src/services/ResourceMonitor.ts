@@ -60,7 +60,7 @@ export class ResourceMonitor extends EventEmitter {
         }
     }
 
-    private async monitor(): Promise<void> {
+    private monitor(): void {
         const currentTime = Date.now();
         const load = os.loadavg()[0];
         const totalMemory = os.totalmem();
