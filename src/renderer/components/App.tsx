@@ -1,11 +1,13 @@
-import * as React from 'react';
-import { hot } from 'react-hot-loader';
+import React from 'react';
 import { ipcRenderer } from 'electron';
 import { QuickOpen } from './QuickOpen';
-import { Statusbar } from './Statusbar';
+import Statusbar from './Statusbar';
 import { Sidebar } from './Sidebar';
 import { MainPanel } from './MainPanel';
 import { SearchReplace } from './SearchReplace';
+import GitPanel from './GitPanel';
+import CommandPalette from './CommandPalette';
+import ExtensionMarketplace from './ExtensionMarketplace';
 import { commandsService, Command } from '../services/commandsService';
 import { keyboardShortcutsService } from '../services/keyboardShortcutsService';
 import { fileSystemService } from '../services/fileSystemService';
@@ -26,6 +28,9 @@ interface AppState {
   activeFileId: string | null;
   isSidebarVisible: boolean;
   isSearchReplaceVisible: boolean;
+  isGitPanelVisible: boolean;
+  isCommandPaletteVisible: boolean;
+  isExtensionMarketplaceVisible: boolean;
   error: string | null;
   searchResults: { [fileName: string]: string[] };
 }
@@ -37,6 +42,9 @@ class App extends React.Component<{}, AppState> {
     activeFileId: null,
     isSidebarVisible: true,
     isSearchReplaceVisible: false,
+    isGitPanelVisible: false,
+    isCommandPaletteVisible: false,
+    isExtensionMarketplaceVisible: false,
     error: null,
     searchResults: {},
   };
@@ -56,12 +64,17 @@ class App extends React.Component<{}, AppState> {
       const fileStructure = await fileSystemService.readDirectory('/');
       this.setState({ fileStructure });
     } catch (error) {
-      this.setState({ error: `Error loading file structure: ${error.message}` });
+      this.setState({ error: `Error loading file structure: ${(error as Error).message}` });
     }
   };
 
   handleKeyDown = (event: KeyboardEvent) => {
-    keyboardShortcutsService.handleKeyDown(event);
+    if (event.ctrlKey && event.key === 'p') {
+      event.preventDefault();
+      this.toggleCommandPalette();
+    } else {
+      keyboardShortcutsService.handleKeyDown(event);
+    }
   };
 
   handleCommand = async (command: Command) => {
@@ -95,7 +108,7 @@ class App extends React.Component<{}, AppState> {
           console.warn(`Unhandled command type: ${command.type}`);
       }
     } catch (error) {
-      this.setState({ error: `Error handling command: ${error.message}` });
+      this.setState({ error: `Error handling command: ${(error as Error).message}` });
     }
   };
 
@@ -120,7 +133,7 @@ class App extends React.Component<{}, AppState> {
         activeFileId: filePath,
       }));
     } catch (error) {
-      this.setState({ error: `Error opening file: ${error.message}` });
+      this.setState({ error: `Error opening file: ${(error as Error).message}` });
     }
   };
 
@@ -144,6 +157,18 @@ class App extends React.Component<{}, AppState> {
     this.setState(prevState => ({ isSidebarVisible: !prevState.isSidebarVisible }));
   };
 
+  toggleGitPanel = () => {
+    this.setState(prevState => ({ isGitPanelVisible: !prevState.isGitPanelVisible }));
+  };
+
+  toggleCommandPalette = () => {
+    this.setState(prevState => ({ isCommandPaletteVisible: !prevState.isCommandPaletteVisible }));
+  };
+
+  toggleExtensionMarketplace = () => {
+    this.setState(prevState => ({ isExtensionMarketplaceVisible: !prevState.isExtensionMarketplaceVisible }));
+  };
+
   updateFileContent = async (fileName: string, newContent: string) => {
     this.setState(prevState => ({
       openFiles: prevState.openFiles.map(file =>
@@ -160,7 +185,7 @@ class App extends React.Component<{}, AppState> {
         this.setState({ error: null });
       }, 3000);
     } catch (error) {
-      this.setState({ error: `Error saving file: ${error.message}` });
+      this.setState({ error: `Error saving file: ${(error as Error).message}` });
     }
   };
 
@@ -222,7 +247,18 @@ class App extends React.Component<{}, AppState> {
   };
 
   render() {
-    const { fileStructure, openFiles, activeFileId, isSidebarVisible, isSearchReplaceVisible, error, searchResults } = this.state;
+    const {
+      fileStructure,
+      openFiles,
+      activeFileId,
+      isSidebarVisible,
+      isSearchReplaceVisible,
+      isGitPanelVisible,
+      isCommandPaletteVisible,
+      isExtensionMarketplaceVisible,
+      error,
+      searchResults
+    } = this.state;
 
     return (
       <div className="App">
@@ -240,15 +276,27 @@ class App extends React.Component<{}, AppState> {
               searchResults={searchResults}
             />
           </div>
-          <Statusbar />
+          {isGitPanelVisible && <GitPanel />}
+          {isExtensionMarketplaceVisible && <ExtensionMarketplace />}
         </div>
+        <Statusbar />
         {error && <div className="error-message">{error}</div>}
         <button className="toggle-search-replace" onClick={this.toggleSearchReplace}>
           {isSearchReplaceVisible ? 'Hide' : 'Show'} Search/Replace
         </button>
+        <button className="toggle-git-panel" onClick={this.toggleGitPanel}>
+          {isGitPanelVisible ? 'Hide' : 'Show'} Git Panel
+        </button>
+        <button className="toggle-extension-marketplace" onClick={this.toggleExtensionMarketplace}>
+          {isExtensionMarketplaceVisible ? 'Hide' : 'Show'} Extension Marketplace
+        </button>
+        <CommandPalette
+          isVisible={isCommandPaletteVisible}
+          onClose={this.toggleCommandPalette}
+        />
       </div>
     );
   }
 }
 
-export default hot(module)(App);
+export default App;

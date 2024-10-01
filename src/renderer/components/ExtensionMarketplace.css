@@ -1,0 +1,123 @@
+.extension-marketplace {
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+.extension-marketplace h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 20px;
+  background-color: #3c3c3c;
+  border: 1px solid #565656;
+  color: #d4d4d4;
+  font-size: 14px;
+}
+
+.extension-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.extension-item {
+  background-color: #252526;
+  border: 1px solid #3c3c3c;
+  margin-bottom: 10px;
+  padding: 15px;
+  transition: background-color 0.2s ease;
+}
+
+.extension-item:hover {
+  background-color: #2a2d2e;
+}
+
+.extension-item h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.extension-item p {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #a0a0a0;
+}
+
+.install-button, .uninstall-button, .installed-button, .installing-button, .uninstalling-button, .retry-button, .settings-button {
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.install-button {
+  background-color: #0e639c;
+}
+
+.install-button:hover {
+  background-color: #1177bb;
+}
+
+.uninstall-button {
+  background-color: #4d4d4d;
+}
+
+.uninstall-button:hover {
+  background-color: #5a5a5a;
+}
+
+.installed-button {
+  background-color: #3c3c3c;
+  cursor: not-allowed;
+}
+
+.installing-button, .uninstalling-button {
+  background-color: #d4d4d4;
+  color: #1e1e1e;
+  cursor: wait;
+}
+
+.retry-button {
+  background-color: #c50f1f;
+}
+
+.retry-button:hover {
+  background-color: #e51400;
+}
+
+.settings-button {
+  background-color: #6a9955;
+}
+
+.settings-button:hover {
+  background-color: #7aad65;
+}
+
+.error-message {
+  color: #e51400;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.extension-settings {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #2d2d2d;
+  border: 1px solid #3c3c3c;
+}

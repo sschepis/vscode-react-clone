@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { commandsService } from '../services/commandsService';
+import { extensionService } from '../../services/ExtensionService';
 import { createUpdateFileContentCommand, createSaveFileCommand } from '../commands/workbenchCommands';
+import MonacoEditor from './MonacoEditor';
 import './TextEditor.css';
 
 interface TextEditorProps {
@@ -28,69 +30,38 @@ const getLanguageFromFileName = (fileName: string): string => {
   }
 };
 
-const highlightSyntax = (content: string, language: string, searchResults: string[]): string => {
-  let highlightedContent = content;
-
-  // Highlight search results
-  if (searchResults.length > 0) {
-    const searchRegex = new RegExp(searchResults.join('|'), 'gi');
-    highlightedContent = highlightedContent.replace(searchRegex, match => `<span class="search-highlight">${match}</span>`);
-  }
-
-  switch (language) {
-    case 'javascript':
-    case 'typescript':
-      return highlightedContent.replace(
-        /(const|let|var|function|return|if|else|for|while|class|import|export|from|=>)(?=[^\w])/g,
-        '<span class="keyword">$1</span>'
-      ).replace(
-        /(["'`])(?:(?=(\\?))\2.)*?\1/g,
-        '<span class="string">$&</span>'
-      ).replace(
-        /\/\/.*/g,
-        '<span class="comment">$&</span>'
-      );
-    case 'html':
-      return highlightedContent.replace(
-        /(<\/?[a-z-]+(?:\s+[a-z-]+(?:=(?:".*?"|'.*?'|[^'">\s]+))?)*\s*\/?>)/gi,
-        '<span class="tag">$1</span>'
-      );
-    case 'css':
-      return highlightedContent.replace(
-        /([\w-]+\s*:)/g,
-        '<span class="property">$1</span>'
-      ).replace(
-        /(#[a-f0-9]{3,6})/gi,
-        '<span class="value">$1</span>'
-      );
-    case 'json':
-      return highlightedContent.replace(
-        /"(\w+)"\s*:/g,
-        '<span class="property">"$1"</span>:'
-      ).replace(
-        /(["'`])(?:(?=(\\?))\2.)*?\1/g,
-        '<span class="string">$&</span>'
-      );
-    default:
-      return highlightedContent;
-  }
+const customTheme = {
+  name: 'customTheme',
+  base: 'vs-dark',
+  inherit: true,
+  rules: [
+    { token: 'comment', foreground: '6A9955' },
+    { token: 'keyword', foreground: '569CD6' },
+    { token: 'string', foreground: 'CE9178' },
+  ],
+  colors: {
+    'editor.background': '#1E1E1E',
+    'editor.foreground': '#D4D4D4',
+  },
 };
 
 export const TextEditor: React.FC<TextEditorProps> = ({ content, fileName }) => {
   const [localContent, setLocalContent] = React.useState(content);
+  const [currentTheme, setCurrentTheme] = React.useState('vs-dark');
   const language = getLanguageFromFileName(fileName);
-  const [searchResults, setSearchResults] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     setLocalContent(content);
   }, [content]);
 
   React.useEffect(() => {
+    extensionService.registerTheme(customTheme);
+  }, []);
+
+  React.useEffect(() => {
     const handleSearchResults = (results: { [fileName: string]: string[] }) => {
       if (results[fileName]) {
-        setSearchResults(results[fileName]);
-      } else {
-        setSearchResults([]);
+        // TODO: Implement search highlighting in Monaco Editor
       }
     };
 
@@ -101,8 +72,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({ content, fileName }) => 
     });
   }, [fileName]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newContent = event.target.value;
+  const handleChange = (newContent: string) => {
     setLocalContent(newContent);
     commandsService.executeCommand(createUpdateFileContentCommand(fileName, newContent));
   };
@@ -111,21 +81,30 @@ export const TextEditor: React.FC<TextEditorProps> = ({ content, fileName }) => 
     commandsService.executeCommand(createSaveFileCommand(fileName, localContent));
   };
 
+  const handleThemeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCurrentTheme(event.target.value);
+  };
+
   return (
     <div className="text-editor">
       <div className="text-editor-header">
         <span className="file-name">{fileName}</span>
         <span className="language">{language}</span>
         <button className="save-button" onClick={handleSave}>Save</button>
+        <select value={currentTheme} onChange={handleThemeChange}>
+          <option value="vs">Light</option>
+          <option value="vs-dark">Dark</option>
+          <option value="hc-black">High Contrast</option>
+          <option value="customTheme">Custom Theme</option>
+        </select>
       </div>
       <div className="editor-container">
-        <textarea
-          className="text-editor-content"
+        <MonacoEditor
+          language={language}
           value={localContent}
           onChange={handleChange}
-          data-file-name={fileName}
+          theme={currentTheme}
         />
-        <pre className="syntax-highlight" dangerouslySetInnerHTML={{ __html: highlightSyntax(localContent, language, searchResults) }} />
       </div>
     </div>
   );
